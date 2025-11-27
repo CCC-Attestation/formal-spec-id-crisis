@@ -1,0 +1,136 @@
+(* Run as follows with subfolder <traces>:
+proverif205 -lib tls-lib-simple.pvl -html traces tls13-multiagent.pv 2>&1 | tee log.txt
+*)
+
+(* 
+Summary: 
+  Server's identity: ID_S associated with pubLTK
+  Key associated with VM identity: pubEK (Note: initially unknown; after successful attestation)
+  General organization for modeling: (ID_S,pubLTK,pubAK,pubEK)
+
+Details:
+  Each server machine is identified by ID_S.
+  The model allows multiple tenants (guest VM) per server machine. 
+  So multiple pubEK per server machine. 
+
+We want to model that some server machines may be compromised while others remain secure.
+The compromise of a server machine is modelled by leaking privAK or privLTK.
+*)
+
+(* Generation of agents and keys *)
+(* All parameters for Server side *)
+(*    agent_keys(ID_S,    privLTK,pubLTK,privAK ,pubAK ,privEK ,pubEK ) *)
+table agent_keys(identity,privkey,pubkey,privkey,pubkey,privkey,pubkey).
+
+let gen_agents_data = 
+  (* Imagine the following as generating the data of a single server machine (single agent)
+  and the replication then produces multiple server machines (multi-agent) *)
+
+  (* Server side *)
+  new ID_S:identity;  (* long-term identity of the server, e.g., FQDN *)
+	out(io,ID_S);  (* Identity is public *)
+
+  (* Private keys in the protocol *)
+	new privLTK: privkey;  (* Long-term Key of Attester *)
+  new privAK: privkey;  (* attestation key for signing evidence *)
+
+  (* public keys should be available to attacker *)
+  let pubLTK = pk(privLTK) in
+	out(io,pubLTK); 
+
+	let pubAK = pk(privAK) in
+	out(io,pubAK);  
+
+	(!(
+    (* This replication allows to model multiple VMs on the same physical machine
+    which is typical in cloud scenarios. *)
+  new privEK: privkey;  (* VM key for TLS *)
+
+	let pubEK = pk(privEK) in
+  out(io,pubEK);  
+
+  (* Record in the table *)
+  insert agent_keys(ID_S,privLTK,pubLTK,privAK,pubAK,privEK,pubEK)
+
+  (* Compromised keys *)
+  (* Mark the event when the keys of a specific machine are leaked
+  i.e., not all server machines are compromised at the same time *)
+  (* Alternative model: start a new phase and check the properties based on phases: attacker (...) phase n *)
+  (* phase 1; *)
+  (* Comment leakage part *)
+  (* event LeakAK(ID,pubLTK,pubAK,pubEK); *)
+  (* event LeakedAK(pubAK);
+  (* models that AK of a specific (not all) server machine is leaked *)
+  out(io, privAK)  *)
+  ))
+.
+
+let run_Client = 
+  (* Intuitively, the following models a single client (single agent) 
+  and the replication takes care of multiple clients (multi agent) *)
+  new ID_C:identity;  (* long-term identity of the client *)
+
+  (* Choose a server machine (potentially a compromised one) to communicate with. *)
+  (! (* this allows the same client to talk to different servers *)
+  (
+  (* ID_S (=hostname/FQDN/SAN) is known to the client, e.g., the desired website it wants to connect. *)
+  get agent_keys(ID_S,_,_,_,_,_,_) in
+  get agent_keys(_,_,_,_,pubAK,_,_) in
+
+  (* The following replication models multiple sessions of client with these parameters *)
+  !Client(ID_C,ID_S,NULL_pubkey,pubAK)
+  ))
+.
+
+let run_Server = 
+  (* Intuitively, this models a single server and the replication takes care of multiple servers *)
+  (* Allow several combinations, but for each private key, choose the corresponding public key *)
+  get agent_keys(ID_S,_,_,_,_,_,_) in
+  get agent_keys(_,privLTK,pubLTK,_,_,_,_) in
+  get agent_keys(_,_,_,privAK,pubAK,_,_) in
+  get agent_keys(_,_,_,_,_,privEK,pubEK) in  
+
+  (* Evidence generation *)
+  let rdata = hash(StrongHash,p2b(pubEK)) in (* rdata = hash(pubEK) *)
+  (* model of dev_status (measurements): input from adversary *)
+  (* Lets the adversary instantiate any desired VM 
+      but only the one with correct measurements will be accepted at Verifier *)
+  (* Alternative model: generate using new, give to adversary and use tables to store *)
+	in(io, dev_status: bitstring);
+  let dataSign = (rdata,dev_status) in
+  let quote = (dataSign, sign(privAK,dataSign)) in
+
+  (* The following replication models multiple sessions of server with these parameters *)
+  !Server(ID_S,pubLTK,pubAK,privEK,quote,NULL_ID)
+.
+
+let LEK =
+  get agent_keys(_,_,_,_,_,privEK,pubEK) in 
+  event LeakedEK(pubEK);  (* mark the leakage of EK *)
+  out(io, privEK)
+.
+
+let LAK =
+  get agent_keys(ID_S,_,pubLTK,privAK,pubAK,_,pubEK) in
+  event LeakedAK(pubAK);  (* mark the leakage of AK *)  
+  event LeakedAK2(ID_S,pubLTK,pubAK,pubEK);  (* mark the leakage of AK with additional parameters *)
+  out(io, privAK)
+.
+
+let LLTK =
+  get agent_keys(_,privLTK,pubLTK,_,_,_,_) in
+  event LeakedLTK(pubLTK);  (* mark the leakage of LTK *)  
+  out(io, privLTK)
+.
+
+(* set traceDisplay = long. Display full trace *)
+(* set verboseClauses = short. *)
+(* main system *)
+(* process 0 *)
+process
+  !(gen_agents_data)
+  | !(run_Client) | !(run_Server) 
+  | !(LEK)
+  | !(LAK)
+  | !(LLTK)
+  | !(SendBadElement)
