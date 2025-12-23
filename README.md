@@ -1,16 +1,59 @@
 # Identity Crisis in Confidential Computing: Formal analysis of attested TLS protocols
 
 This repo contains the artifacts for formal specification and analysis of the following two candidates for standardization for attested TLS protocols:
-- [Interoperable RA-TLS protocol](https://github.com/ccc-attestation/interoperable-ra-tls)
-- TLS-attest protocol: [spec](https://datatracker.ietf.org/doc/draft-fossati-tls-attestation/09/) and [CCC project implementation](https://github.com/ccc-attestation/attested-tls-poc)
+- [Interoperable RA-TLS protocol](https://github.com/ccc-attestation/interoperable-ra-tls) (pre-handshake attestation)
+- TLS-attest protocol (intra-handshake attestation): [spec](https://datatracker.ietf.org/doc/draft-fossati-tls-attestation/09/) and [CCC project implementation](https://github.com/ccc-attestation/attested-tls-poc)
 
 We provide a formal proof of insecurity of both protocols using state-of-the-art tool [ProVerif](https://ieeexplore.ieee.org/document/9833653) and propose some potential solutions for discovered security vulnerabilities.
+
+
+## Main results
+
+- Intel's RA-TLS/Interoperable RA-TLS is vulnerable to replay attacks.
+- Intel's RA-TLS/Interoperable RA-TLS and draft-fossati-tls-attestation are both vulnerable to diversion attacks.
+
+| Property                   	       | IRA-TLS| TLS-a |
+| :--                		             | :--    | :--   |
+| G-RA1: Integrity of Evidence       | ✅     | ✅    | 
+| G-RA2: Freshness of Evidence       | ❌     | ✅    |
+| G-RA3: Secrecy of Attestation Keys | ✅     | ✅    |
+| G-TLS1: Server Identity            | ❌     | ❌    |
+| G-TLS2: Server Authentication      | ❌     | ❌    |
+| G-C1: Compound Authentication      | ❌     | ❌    |
+| G-C2: Agreement of All Parameters  | ❌     | ❌    |
+
+<!---
+#❓
+--->
 
 ## Artifacts author
 Muhammad Usama Sardar (contact: muhammad_usama.sardar at tu-dresden.de)
 
-## Paper authors
-Muhammad Usama Sardar, Mariam Moustafa, and Tuomas Aura
+## Pre-print
+Preprint is available [here](https://www.researchgate.net/publication/398839141_Identity_Crisis_in_Confidential_Computing_Formal_Analysis_of_Attested_TLS).
+
+## Scientific Publication
+The work is accepted for publication at AsiaCCS and should be cited as follows: 
+
+> Muhammad Usama Sardar, Mariam Moustafa, and Tuomas Aura. 2026.
+Identity Crisis in Confidential Computing: Formal Analysis of Attested
+TLS. In ACM Asia Conference on Computer and Communications Security
+(ASIA CCS ’26), June 1–5, 2026, Bangalore, India. ACM, New York, NY, USA,
+14 pages. https://doi.org/10.1145/3779208.3785387
+
+BibTeX:
+```
+@inproceedings{Sardar2026IdCrisis,
+address = {New York, NY, USA},
+author = {Sardar, Muhammad Usama and Moustafa, Mariam and Aura, Tuomas},
+booktitle = {Proceedings of the 21st ACM ASIA Conference on Computer and Communications Security (ACM ASIACCS 2026)},
+publisher = {ACM},
+title = {{Identity Crisis in Confidential Computing: Formal Analysis of Attested TLS}},
+doi={10.1145/3779208.3785387},
+year = {2026}
+}
+```
+
 
 ## Acknowledgments
 Ionut Mihalcea contributed significantly to the discussions for the formalization. We also gratefully acknowledge the following for insightful discussions on this work:
@@ -25,7 +68,7 @@ Ionut Mihalcea contributed significantly to the discussions for the formalizatio
 - Jonathan Hoyland
 - Richard Barnes
 
-Several others at the IETF and IRTF have contributed by providing feedback.
+Several others at the IETF, IRTF and CCC have contributed by providing feedback.
 
 ## Tool 
 We use state-of-the-art symbolic security analysis tool [ProVerif](https://ieeexplore.ieee.org/document/9833653) for the specification of the protocols. 
@@ -42,7 +85,30 @@ See Section 1.4 of [manual](https://bblanche.gitlabpages.inria.fr/proverif/manua
 - Folder `TLS-a` contains code for original TLS-attest standard candidate.
 - Folder `TLS-a/fix` contains code for our proposed fix for TLS-attest standard candidate.
 
-The name of files within each folder are the same. So the following commands can be used to run any of those.
+The name of files within each folder are the same. So the following [commands](https://github.com/CCC-Attestation/formal-spec-id-crisis?tab=readme-ov-file#running-automatic-proofs) can be used to run any of those.
+
+```text
+formal-spec-id-crisis/
+│
+├── README.md                        # README file
+│
+├── IRA-TLS/                         # Original Interoperable RA-TLS protocol
+│     ├── tls-lib-simple.pvl         # ProVerif library file
+│     ├── tls13-multiagent.pv        # ProVerif main file
+│     │
+│     ├── fix/                       # Fixed version of Interoperable RA-TLS protocol
+│          ├── tls-lib-simple.pvl    # ProVerif library file
+│          ├── tls13-multiagent.pv   # ProVerif main file
+│
+└── TLS-a/                           # Original TLS-attest protocol (draft-fossati-tls-attestation)
+      ├── tls-lib-simple.pvl         # ProVerif library file
+      ├── tls13-multiagent.pv        # ProVerif main file
+      │
+      ├── fix/                       # Fixed version of TLS-attest protocol (draft-fossati-tls-attestation)
+           ├── tls-lib-simple.pvl    # ProVerif library file
+           ├── tls13-multiagent.pv   # ProVerif main file
+```
+
 
 ## Running automatic proofs 
 
@@ -106,30 +172,33 @@ If you are around on any of the following venues of upcoming talks (in reverse c
 
 | Event/Host | Venue | Date(s) | Funding | Material |
 | --- | --- | --- | --- | --- |
-| [AsiaCCS 2026](https://asiaccs2026.cse.iitkgp.ac.in/) | Bangalore, India | 1-5 June, 2026 |  | slides |
+| [AsiaCCS 2026](https://asiaccs2026.cse.iitkgp.ac.in/) | Bangalore, India | 1-5 June, 2026 |  | slides, video |
 | [IETF 125](https://www.ietf.org/meeting/125/) | Shenzhen, China | 16-20 Mar, 2026 | Sponsors are invited |   |
 | [IETF 125 Hackathon](https://www.ietf.org/meeting/hackathons/125-hackathon/) | Shenzhen, China | 14-15 Mar, 2026 | Sponsors are invited |  |
-| [Confidential Computing](https://fosdem.org/2026/schedule/track/confidential-computing/) devroom at [FOSDEM  2026](https://fosdem.org/2026/) | Brussels, Belgium | 31 Jan-1 Feb, 2026 | Sponsors are invited | [abstract](https://fosdem.org/2026/schedule/event/attestedtls/), slides, video |
-| IETF SEAT WG Interim meeting | Virtual | TBA Jan 2026 | - | slides; video |
-| Data Security Work Stream (DSWS) at [The Global Alliance for Genomics and Health (GA4GH)](https://www.ga4gh.org/) | Virtual | 22 Dec, 2025 | - | slides; video |
+| [Confidential Computing](https://fosdem.org/2026/schedule/track/confidential-computing/) devroom at [FOSDEM  2026](https://fosdem.org/2026/) | Brussels, Belgium | 31 Jan-1 Feb, 2026 | Sponsors are invited | [abstract](https://fosdem.org/2026/schedule/event/GHGFBM-attestedtls/), slides, video |
+| IETF SEAT WG [Interim meeting](https://meetings.conf.meetecho.com/interim/?session=35089) | Virtual | 23 Jan 2026 | - | slides; video |
+| [CyberFunk Fellowship](https://cypherpunk.camp/#fellowship) CF Cohort Meeting #3 (co-present with Peg Jones) | Virtual | 8 Jan, 2025 | - | slides |
+| Data Security Work Stream (DSWS) at [The Global Alliance for Genomics and Health (GA4GH)](https://www.ga4gh.org/) | Virtual | 22 Dec, 2025 | - | [slides](https://drive.google.com/file/d/1w1UtdmtpYwIR3h_8Py5ZTnuIUU92tNj8/view); [video](https://us02web.zoom.us/rec/share/aGzeZsiCji1bG-vv3HELNWt-XD8ZJAR3eYMteYDp-319hJspUxOGisse2Lbd7CN5.8axfRbByp-O5rl29?startTime=1766433391000) |
+| CCC Attestation SIG | Virtual | 16 Dec, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Binding_Properties_20251216.pdf); [video](https://youtu.be/w_MrjMeHyP8?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=593) |
 | [Confidential Computing MC](https://lpc.events/event/19/sessions/224/), <br> [System Boot and Security MC](https://lpc.events/event/19/sessions/233/) <br> and [BoF session](https://lpc.events/event/19/sessions/242/#20251212) @ <br>  [Linux Plumbers Conference 2025](https://lpc.events/event/19/) | Tokyo, Japan | 11-13 Dec, 2025 | [Linux Foundation](https://www.linuxfoundation.org/) | CC MC [abstract](https://lpc.events/event/19/contributions/2186/), [slides](https://lpc.events/event/19/contributions/2186/attachments/1732/3791/20251212_LPC_CC_MC.pdf) and [video](http://www.youtube.com/watch?v=MF9AwkMJOlw); <br> Security MC [abstract](https://lpc.events/event/19/contributions/2255/), [slides](https://lpc.events/event/19/contributions/2255/attachments/1924/4114/20251213_LPC_Sec_MC.pdf) and [video](http://www.youtube.com/watch?v=66Bi8MTOQiU); <br> [BoF abstract](https://lpc.events/event/19/contributions/2299/) and [video](http://www.youtube.com/watch?v=WxFDoSVkQ-A) |
 | Lightening talk at [Systems Meetup](https://ukvly.org/) | Dresden, Germany | 4 Dec, 2025 | - | slides |
+| CCC Attestation SIG | Virtual | 2 Dec, 2025 | - | slides; [video](https://youtu.be/16aGZ-oZidg?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=2405) |
 | Invited talk at Attestation Workshop @ [GlobalPlatform Fall Meeting](https://globalplatform.org/events/) | Malaga, Spain (Virtual) | 20 Nov, 2025 | - | slides; video |
 | [IETF 124](https://www.ietf.org/meeting/124/) | Montreal, Canada | 3-7 Nov, 2025 | Peg Jones, [GENXT](https://www.genxt.network/), [CCC](https://confidentialcomputing.io/) and [Teleport](https://medium.com/@helltech) | HotRFC [slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-hotrfc-sessa-01-gaps-in-confidential-computing-00) and [video](https://youtu.be/FAxyRU3uMc0?t=361); <br> UFMRG [slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-ufmrg-formal-analysis-of-attested-tls-protocols-00) and [video](https://youtu.be/i0lVleC87G0?t=233); <br> SEAT [slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-seat-insights-from-formal-analysis-01) and [video](https://youtu.be/ic0K-S8Txvg?t=2042); <br> RATS [slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-rats-sessb-guideline-for-security-consideration-of-rats-00), [video1](https://youtu.be/TDtDVy9q704?t=5874) and [video2](https://youtu.be/N4xkqwPrTJw?t=4095); <br> Side meetings [plan](https://mailarchive.ietf.org/arch/msg/124attendees/Z7fg3_OAW4lJtgrU68oZLFdCLxw/), slides and videos <br>  |
 | [IETF 124 Hackathon](https://www.ietf.org/meeting/hackathons/124-hackathon/) | Montreal, Canada | 1-2 Nov, 2025 | Peg Jones, [GENXT](https://www.genxt.network/), [CCC](https://confidentialcomputing.io/) and [Teleport](https://medium.com/@helltech) | [Hackathon project](https://wiki.ietf.org/en/meeting/124/hackathon#identity-crisis-in-attested-tls-protocols-for-confidential-computing), [slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-hackathon-sessd-identity-crisis-in-confidential-computing-00), [demo](https://wiki.ietf.org/en/meeting/124/hackathon/hackdemo) and [video](https://youtu.be/ZBU1oOs7Ztk?t=5929) |
 | [OCP Security](https://www.opencompute.org/wiki/Security) | Virtual | 28 October, 2025 | - | slides; [video](https://opencompute-org.zoom.us/rec/share/x8mX3woKanHSzcrquhBEJYo17EWp0HViDjnmVRp3ntPed5Q24UoHiSTGPDrHuUXS.NNtc4uloIsIkIEZC) |
 | [GA4GH Plenary](https://www.ga4gh.org/news_item/ga4gh-13th-plenary/) | Uppsala, Sweden (Virtual) | 8 October, 2025 | - | slides; video |
-| CCC Attestation SIG | Virtual | 7 Oct, 2025 | - | slides; [video](https://youtu.be/tHdZMK8WMd0?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=934) |
+| CCC Attestation SIG | Virtual | 7 Oct, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Comprehensive_AttestedTLS_20251007.pdf); [video](https://youtu.be/tHdZMK8WMd0?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=934) |
 | [Workshop on Program Verification](https://europroofnet.github.io/wg3-Sept2025/) at [EuroProofNet Symposium](https://europroofnet.github.io/Symposium/) | Orsay, France (Virtual) | 17 September, 2025 | - | slides; video |
 | [RIOT Summit 2025](https://summit.riot-os.org/2025/) | Dresden | 3-5 September, 2025 | - | [slides](https://summit.riot-os.org/2025/wp-content/uploads/sites/20/2025/09/s03-04.pdf); [video](https://www.youtube.com/watch?v=76GJHX8br8o&list=PLDXXQJiSjPKF4Wg-I1RUc0WKK_KoArZP9&index=14&pp=iAQB) |
-| [FOSForums 2025](https://www.fosforums.org/home) | Brazil (Virtual) | 29 August, 2025 | - | slides; video |
+| [FOSForums 2025](https://www.fosforums.org/home) | Brazil (Virtual) | 29 August, 2025 | - | slides; [video](https://youtu.be/RiL00ICGJPQ?t=748) |
 | Open TRE GIF | Virtual | 4 August, 2025 | - | slides; video |
 | [IETF 123](https://www.ietf.org/meeting/123/) | Madrid, Spain | 21-25 July, 2025 | [CCC](https://confidentialcomputing.io/), [GENXT](https://www.genxt.network/) and [Teleport](https://medium.com/@helltech) | expat BoF [slides](https://datatracker.ietf.org/meeting/123/materials/slides-123-expat-design-space-of-attested-tls-01.pdf) and [video](https://youtu.be/RS4LaqhupN4?t=1971); <br> TLS [slides](https://datatracker.ietf.org/meeting/123/materials/slides-123-tls-remote-attestation-with-exported-authenticators-00) and [video](https://youtu.be/1KsqfSxLWpo?t=2501); <br> UFMRG [slides](https://datatracker.ietf.org/meeting/123/materials/slides-123-ufmrg-attested-tls-00) and [video](https://youtu.be/0-1lJ99Nr5g?t=170); <br> RATS [slides](https://datatracker.ietf.org/meeting/123/materials/slides-123-rats-attested-tls-00) and [video](https://youtu.be/kUyqSvsX-QU?t=6992); <br> Hot RFC [abstract](https://datatracker.ietf.org/meeting/123/materials/agenda-123-hotrfc-sessa-04), [slides](https://datatracker.ietf.org/meeting/123/materials/slides-123-hotrfc-sessa-12-security-considerations-for-confidential-computing-00) and [video](https://youtu.be/m8hTDxRpd10?t=3092); <br> Side meetings [plan](https://mailarchive.ietf.org/arch/msg/tls/CmkHypE9py5x7zw3GjygOGrKQZo/), slides and videos <br> |
 | [IETF 123 Hackathon](https://www.ietf.org/meeting/hackathons/123-hackathon/) | Madrid, Spain | 19-20 July, 2025 | [CCC](https://confidentialcomputing.io/), [GENXT](https://www.genxt.network/) and [Teleport](https://medium.com/@helltech) | [Hackathon project](https://wiki.ietf.org/en/meeting/123/hackathon#identity-crisis-in-attested-tls-for-confidential-computing) |
 | Tutorial @ [ISCC 2025](https://ieee-iscc.computer.org/2025/#) | Bologna, Italy | 5 July, 2025 | [GENXT](https://www.genxt.network/) | [Abstract](https://ieee-iscc.computer.org/2025/tutorials/) |
 | Invited seminar at [Hochschule Bonn-Rhein-Sieg (H-BRS)](https://www.h-brs.de/en) | Virtual | 1 July, 2025 | - |  |
 | [IETF RATS Interim meeting](https://datatracker.ietf.org/meeting/interim-2025-rats-02/session/rats) | Virtual | 27 June, 2025 | - | [slides](https://datatracker.ietf.org/meeting/interim-2025-rats-02/materials/slides-interim-2025-rats-02-sessa-attested-tls-00.pdf), [video](https://youtu.be/EZudV1F9Q70?t=2186)  |
-| CCC TAC | Virtual | 26 June, 2025 | - | slides; video |
+| CCC TAC | Virtual | 26 June, 2025 | - | slides; [video](https://youtu.be/R20K_PwY8Xk?list=PLmfkUJc39uMjaB_I1dYW72I44kr9QzG_B&t=1670) |
 | ~~[Dresden Science Night 2025](https://www.wissenschaftsnacht-dresden.de/en/)~~ | ~~Dresden, Germany~~ | ~~20 June, 2025~~ | - | ~~[demo](https://www.wissenschaftsnacht-dresden.de/en/events/detailed-view/confidential-computing-14103)~~ Overlap with ICE |
 | [18th Interaction and Concurrency Experience (ICE)](https://www.discotec.org/2025/satellite/ice) | Lille, France | 20 June, 2025 | [GENXT](https://www.genxt.network/) | |
 | [Confidential Computing Summit 2025](https://www.confidentialcomputingsummit.com/e/ccs25) | San Francisco, USA (Virtual) | 17-18 June, 2025 | - | [abstract](https://www.confidentialcomputingsummit.com/e/ccs25/page/2025posters); [video](https://content-cdn.sessionboard.com/event-files/E3fQNfx2QAOa8IZga7sx_FinalSubmitted.mp4) |
@@ -137,20 +206,20 @@ If you are around on any of the following venues of upcoming talks (in reverse c
 | Invited talk at 2025 Future Trustworthiness Technology Summit (organized by Huawei) | Paris, France | 26-27 May, 2025 | [Huawei](https://www.huawei.com/eu/) | slides |
 | [Linaro Connect 2025](https://www.linaro.org/connect) | Lisbon, Portugal | 15 May, 2025 | [GENXT](https://www.genxt.network/) and [Pacific Analytics](https://www.pacificanalytics.com/) | [slides](https://www.researchgate.net/publication/392070803_Presentation_Attested_TLS_Design_Space_Tradeoffs_and_Standardization); [video](https://www.youtube.com/watch?v=K_07GH90dUw) |
 | [IETF RATS Interim meeting](https://datatracker.ietf.org/meeting/interim-2025-rats-01/session/rats) | Virtual | 2 May, 2025 | - | [slides](https://datatracker.ietf.org/meeting/interim-2025-rats-01/materials/slides-interim-2025-rats-01-sessa-identity-crisis-in-attested-tls-for-confidential-computing-01.pdf); [video](https://youtu.be/Vd_gL4YUGkI?t=2942) |
-| CCC Attestation SIG | Virtual | 22 April, 2025 | - | slides; [video](https://youtu.be/p5X7a9_TqSI?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=521) |
+| CCC Attestation SIG | Virtual | 22 April, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Overview_Open_Challenges_20250408_and_20250422.pdf); [video](https://youtu.be/p5X7a9_TqSI?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=521) |
 | Invited talk at Google | Virtual | 17 April, 2025 | - | slides; video |
 | Invited talk at [Flashbots](https://www.flashbots.net/) | Virtual | 9 Apr, 2025 | - | slides; video |
-| CCC Attestation SIG | Virtual | 8 Apr, 2025 | - | [video](https://youtu.be/JO_lUznWEgI?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=398) |
+| CCC Attestation SIG | Virtual | 8 Apr, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Overview_Open_Challenges_20250408_and_20250422.pdf); [video](https://youtu.be/JO_lUznWEgI?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=398) |
 | ~~[2025 Annual Meeting of the WG "Formal Methods in Security"](https://gtmfs2025.sciencesconf.org/)~~ | ~~Le Mont-Dore, France~~ | ~~17-21 Mar, 2025~~ | - | Could not attend due to overlap with IETF meeting |
 | [IETF 122](https://www.ietf.org/meeting/122/) | Bangkok, Thailand | 17-21 Mar, 2025 | Pavel Nikonorov ([GENXT](https://www.genxt.network/)) | [WIMSE slides](https://datatracker.ietf.org/meeting/122/materials/slides-122-wimse-identity-crisis-00) and [video](https://youtu.be/7FUaIYiGzQs?t=4533), <br> [TLS slides](https://datatracker.ietf.org/meeting/122/materials/slides-122-tls-identity-crisis-00) and [video](https://youtu.be/bQ-Bz60AppI?t=6353), <br> Hot RFC [slides](https://datatracker.ietf.org/meeting/122/materials/slides-122-hotrfc-sessa-09-identity-crisis-in-attested-tls-for-confidential-computing-00) and [video](https://youtu.be/YHZ2OTwtTj8?list=PLC86T-6ZTP5i9ogKVq-2kQdcj9DWhIAVz&t=1932), <br> [Side meetings plan](https://mailarchive.ietf.org/arch/msg/122attendees/KYY1qFF2wx_fKPGGufDvQgpxFRo/), [slides](https://www.researchgate.net/publication/390121641_Presentation_Attested_TLS_Fundamentals) and videos |
 | [IETF 122 Hackathon](https://wiki.ietf.org/en/meeting/122/hackathon#identity-crisis-in-attested-tls-for-confidential-computing) | Bangkok, Thailand | 15-16 Mar, 2025 | Pavel Nikonorov ([GENXT](https://www.genxt.network/)) | [Hackathon project](https://wiki.ietf.org/en/meeting/122/hackathon), [slides](https://datatracker.ietf.org/meeting/122/materials/slides-122-hackathon-sessd-identity-crisis-for-attested-tls-in-confidential-computing-00), [demo](https://wiki.ietf.org/meeting/122/hackathon/hackdemo) and [video](https://youtu.be/CP0Namfmajc?list=PLC86T-6ZTP5i9ogKVq-2kQdcj9DWhIAVz&t=5732) |
 | CCC Attestation SIG | Virtual | 11 Mar, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Identity_Crisis.pdf) [video](https://youtu.be/9CEEnOvhwKM?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=921) |
 | Data Security Work Stream (DSWS) at [The Global Alliance for Genomics and Health (GA4GH)](https://www.ga4gh.org/) | Virtual | 27 Feb, 2025 | - | |
-| CCC Attestation SIG | Virtual | 25 Feb, 2025 | - |  |
+| CCC Attestation SIG | Virtual | 25 Feb, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Identity_Crisis_20250225.pdf); [video](https://zoom.us/rec/share/5ZOC8qaLh56mcXRInUFflOAtVLTjCJ1Sw96PyuU3Ji-OQn5cPVL1yAGgszS_4PvZ.S1pFbqWjkmlXiidQ) |
 | Seminar and research visit at [University of Namur](https://www.unamur.be/en) | Namur, Belgium | 3-7 Feb, 2025 | [University of Namur](https://www.unamur.be/en) | |
 | Organizer [Attestation](https://fosdem.org/2025/schedule/track/attestation/) devroom at [FOSDEM](https://fosdem.org/2025/) | Brussels, Belgium | 1-2 Feb, 2025 | Pavel Nikonorov ([GENXT](https://www.genxt.network/)) | [slides](https://www.researchgate.net/publication/388833498_Welcome_to_the_Attestation_Devroom), video |
 | [Attestation workshop](https://github.com/muhammad-usama-sardar/attestation-workshop-fosdem25) | Brussels, Belgium | 31 Jan, 2025 | Pavel Nikonorov ([GENXT](https://www.genxt.network/)) | |
-| CCC Attestation SIG | Virtual | 28 Jan, 2025 | - | [video](https://youtu.be/Jy6YGGiy_5Q?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=541) |
+| CCC Attestation SIG | Virtual | 28 Jan, 2025 | - | [slides](https://github.com/CCC-Attestation/meetings/blob/main/materials/MuhammadUsamaSardar_Open_Questions_20250128.pdf); [video](https://youtu.be/Jy6YGGiy_5Q?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=541) |
 | Lightening talk at [Systems Meetup](https://ukvly.org/) | Dresden, Germany | 21 Jan, 2025 | - |  |
 | Invited talk at [ICARC 2025](http://www.icarc.sab.ac.lk/) | Virtual | 17 Jan, 2025 | - | |
 | CCC Attestation SIG | Virtual | 19 Nov, 2024 | - | [video](https://youtu.be/5VqGJ6Ujj3k?list=PLmfkUJc39uMhZsNGmpx-qD-uCoQyMglIp&t=1824) |
