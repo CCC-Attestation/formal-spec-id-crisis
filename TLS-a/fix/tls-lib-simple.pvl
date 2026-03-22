@@ -1345,8 +1345,9 @@ let Server(ID_S:identity, privLTK: privkey, privAK: privkey, privEK: privkey,ID_
   event ServerRA(ID_S,pubLTK,pubAK,pubEK,dev_status1,quote);  
   event ServerRA2(pubAK,pubEK,dev_status1);
   event ServerRAWithoutAK(pubEK,dev_status1,quote);
-  out(io,CRT(pubEK,quote,selfsign,ID_S,server_cert));  (* Send Certificate message *)
-  let log_CRT = (log_SH,CRT(pubEK,quote,selfsign,ID_S,server_cert)) in  (* received ClientHello || sent ServerHello || sent Certificate *)
+  let server_cert_tuple = ((ID_S, pubLTK), server_cert) in
+  out(io,CRT(pubEK,quote,selfsign,ID_S,server_cert_tuple));  (* Send Certificate message *)
+  let log_CRT = (log_SH,CRT(pubEK,quote,selfsign,ID_S,server_cert_tuple)) in  (* received ClientHello || sent ServerHello || sent Certificate *)
 
   (* CertificateVerify message *)
   let sg     = sign(privEK ,hash(hash_algo,log_CRT)) in  (* A signature over the value Transcript-Hash(Handshake Context, Certificate) [Sec. 4.4, RFC8446] using LTK; Handshake Context via first row of table in Sec. 4.4 of RFC8446. log_CRT contains Handshake Context, Certificate. *)
