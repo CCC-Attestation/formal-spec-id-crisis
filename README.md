@@ -4,6 +4,8 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
+# [Paper](https://doi.org/10.1145/3779208.3785387) </br>
+
 </div>
 
 This repo contains the artifacts for formal specification and analysis of the following two candidates for standardization for attested TLS protocols:
@@ -40,7 +42,7 @@ Muhammad Usama Sardar (contact: muhammad_usama.sardar at tu-dresden.de)
 Preprint is available [here](https://www.researchgate.net/publication/398839141_Identity_Crisis_in_Confidential_Computing_Formal_Analysis_of_Attested_TLS).
 
 ## Scientific Publication
-The work is accepted for publication at AsiaCCS and should be cited as follows: 
+The work is published at AsiaCCS'26 and may be cited as follows: 
 
 > Muhammad Usama Sardar, Mariam Moustafa, and Tuomas Aura. 2026.
 Identity Crisis in Confidential Computing: Formal Analysis of Attested
@@ -73,6 +75,11 @@ For Internet-Drafts:
       - ins: T. Aura
 ```
 
+or simply
+```
+  ID-Crisis: DOI.10.1145/3779208.3785387
+```
+
 and then use as ``{{ID-Crisis}}``
 
 ## Acknowledgments
@@ -87,6 +94,7 @@ Ionut Mihalcea contributed significantly to the discussions for the formalizatio
 - Christopher Patton
 - Jonathan Hoyland
 - Richard Barnes
+- Nathanael Ritz
 
 Several others at the IETF, IRTF and CCC have contributed by providing feedback.
 
@@ -136,7 +144,7 @@ formal-spec-id-crisis/
 
 ## Running automatic proofs 
 
-(Approximate execution time for TLS-a/fix using ProVerif version 2.05 on Ubuntu 20.04 LTS on an Intel Core i7-11800H processor with 64 GB of RAM: ca. 21 minutes)
+(Approximate execution time for `TLS-a/fix` using ProVerif version 2.05 on Ubuntu 20.04 LTS on an Intel Core i7-11800H processor with 64 GB of RAM: ca. 21 minutes)
 
 ### Basic Execution
 Run as follows: 
