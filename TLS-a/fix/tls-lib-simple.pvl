@@ -426,7 +426,7 @@ reduc forall k:sym_enc_key, m:bitstring;
 fun b2s(bitstring): sym_enc_key [data].
 
 free mesg:bitstring [private].
-(* 
+
 (**********************************************************************)
 (* Sanity Checks (Reachability props): should all be false (confirms event is reachable) *)
 (**********************************************************************)
@@ -1097,7 +1097,7 @@ query cr:random, sr:random, cr':random, sr':random,
       event(SentBadElement) ||
       event(LeakedAK(pubAK)) ||
       event(LeakedEK(pubEK))
-. *)
+.
 
 (**********************************************************************)
 (* Compound Authentication Properties *)
